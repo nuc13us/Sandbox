@@ -7,9 +7,13 @@ import requests #virustotal API
 ############################[static analysis]####################################
 
 def filetype(FileName,fo):
+  """
   m = magic.open(magic.MAGIC_NONE)
   m.load()
   FileType = m.file(FileName)
+  """
+  args = ["file",FileName]
+  FileType = subprocess.check_output(args)
   fo.write("File type of the malware is: " + "\n" + FileType + "\n")
 
 def md5sum(FileName,fo):
@@ -29,9 +33,15 @@ def virustotal(FileName,fo):
 
   response = requests.get('https://www.virustotal.com/vtapi/v2/file/report',params=params, headers=headers)
   json_response = response.json()
-
-  fo.write(json_response)
+  fo.write(str(json_response))
  
+def yararules(FileName,fo):
+  print "Getting YARA_RULES"
+  args = ["yara", "/home/nuc13us/backup/sandbox/rules-master/Packers_index.yar", FileName]
+  output = subprocess.check_output(args)
+  fo.write("Rules of yara are: " + "\n" + output)
+
+
 def static(malware):  
   fo = open('static.txt',"w+")
  
@@ -40,4 +50,5 @@ def static(malware):
   filetype(malware,fo)
   md5sum(malware,fo)
   strings(malware,fo)
-  virustotal(malware,fo)
+  virustotal(malware,fo) 
+  yararules(malware,fo)
