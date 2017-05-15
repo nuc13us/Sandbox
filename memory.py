@@ -1,80 +1,104 @@
 import subprocess
+from time import sleep
 
 ############################[memory analysis]####################################
 
+#Volatility is a Framework that is used to perform memory anaylsis
+#After the completation of the dynamic analysis in sandbox
+#We take snapshot of the VM and perform memory analysis
+
+#This function is used to run the command by using voltality command line tool
 def run_cmd(image, cmd):
-    pargs = ["vol.py", "-f", image ,"--profile="+imagetype, cmd]
-    proc = subprocess.Popen(pargs, stdout=subprocess.PIPE)
+    pargs = ["vol.py", "-f", image , cmd]
+    proc = subprocess.Popen(pargs)
+    sleep(15)
     return proc
 
-def psxview(image):
-    return run_cmd(image,'psxview')
-
+#To list the processes of a system
 def pslist(image):
-    return  run_cmd(image,'pslist')
+    print "!!!!!!!!Executing psxview"
+    a = run_cmd(image,'pslist')
+    return a
 
+#This can find processes that have been hidden or unlinked by a rootkit
+def psscan(image):
+    print "!!!!!!!Executing psscan"
+    return run_cmd(image, 'psscan')
+
+#To view the process listing in tree form
 def pstree(image):
+    print "!!!!!!!!Executing pstree"
     return run_cmd(image,'pstree')
 
-def threads(image):
-    return run_cmd(image,'threads')
+#To display the open handles in a process like files, registry keys, mutexes, threads
+def handles(image):
+    print "!!!!!!!!!Executing handles"
+    return run_cmd(image,'handles')
 
-def netstat(image):
-    return run_cmd(image,'netstat')
+#This plugin shows you which process privileges are present and enabled
+def privs(image):
+    print "!!!!!!!!!!Executing privs"
+    return run_cmd(image,'privs')
 
-def ipconfig(image):
-    return run_cmd(image,'ipconfig')
+#To display a process's loaded DLLs, use the dlllist command
+def dlllist(image):
+    print "!!!!!!!!!!Executing dlllist"
+    return run_cmd(image,'dlllist')
 
-def library_list(image):
-    return run_cmd(image,'library_list')
+#To view the list of kernel drivers loaded on the system
+def hivescan(image):
+    print "!!!!!!!!!!Executing hivescan"
+    return run_cmd(image,'hivescan')
 
-def check_modules(image):
-    return run_cmd(image,'check_modules')
+#To view the list of kernel drivers loaded on the system
+def kernel_modules(image):
+    print "!!!!!!!!!!Executing modules"
+    return run_cmd(image,'modules')
 
-def hidden_modules(image):
-    return run_cmd(image,'hidden_modules')
+#This can pick up previously unloaded drivers and drivers that have been hidden/unlinked by rootkits
+def kernel_drivers(image):
+    print "!!!!!!!!!!Executing modscan"
+    return run_cmd(image, 'modscan')
 
-def kernel_opened_files(image):
-    return run_cmd(image,'kernel_opened_files')
+#To find DRIVER_OBJECTs in physical memory using pool tag scanning
+def driverscan(image):
+    print "!!!!!!!!!!Executing hivelist"
+    return run_cmd(image,'driverscan')
 
-def keyboard_notifiers(image):
-    return run_cmd(image,'keyboard_notifiers')
-
-def check_syscall(image):
-    return run_cmd(image,'check_syscall')
-
+#This plugin finds structures known as COMMAND_HISTORY
 def bash_history(image):
-    return run_cmd(image,'bash')
+    print "!!!!!!!!!!Executing hivelist"
+    return run_cmd(image,'cmdscan')
 
-def netfilter(image):
-    return run_cmd(image,'netfilter')
+#To find _TCPT_OBJECT structures using pool tag scanning
+def connscan(image):
+    print "!!!!!!!!!!Executing consscan"
+    return run_cmd(image,'connscan')
 
-def plthook(image):
-    return run_cmd(image,'plthook')
+#To detect listening sockets for any protocol (TCP, UDP, RAW, etc)
+def sockets(image):
+    print "!!!!!!!!!!Executing sockets"
+    return run_cmd(image,'sockets')
 
-def apihooks(image):
-    return run_cmd(image,'apihooks')
 
 def memory(image):
-  
+
+  #image = "/home/nuc13us/backup/sandbox/Sandbox/dump.elf"
   fo = open('memory.txt',"w+")
   a = "#"*20 + " Memory Analysis " + "#"*20
   fo.write(a + "\n")
+  a = pslist(image)
 
-  fo.write(psxview(image))
-  fo.write(pslist(image))
-  fo.write(pstree(image))
-  fo.write(threads(image))
-  fo.write(netstat(image))
-  fo.write(ipconfig(image))
-  fo.write(library_list(image))
-  fo.write(check_modules(image))
-  fo.write(hidden_modules(image))
-  fo.write(kernel_opened_files(image))
-  fo.write(keyboard_notifiers(image))
-  fo.write(check_syscall(image))
-  fo.write(bash_history(image))
-  fo.write(netfilter(image))
-  fo.write(plthook(image))
-  fo.write(apihooks(image))
-
+  fo.write(str(a))
+  fo.write(str(psscan(image)))
+  fo.write(str(pstree(image)))
+  fo.write(str(handles(image)))
+  fo.write(str(privs(image)))
+  fo.write(str(dlllist(image)))
+  fo.write(str(hivescan(image)))
+  fo.write(str(kernel_modules(image)))
+  fo.write(str(kernel_drivers(image)))
+  fo.write(str(driverscan(image)))
+  fo.write(str(bash_history(image)))
+  fo.write(str(connscan(image)))
+  fo.write(str(sockets(image)))
